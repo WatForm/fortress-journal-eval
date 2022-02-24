@@ -47,7 +47,7 @@ The following are the steps taken to reproduce the evaluation reported in the fo
    -> fortress-journal-results/sat/sat-file-list1.txt (397 files)
 
 5. Translate sat ones into alloy format   
-   a. Follow readme in util/TPTPtoAlloy to build that utility  
+   a. Follow readme in util/TPTPtoAlloy to build that utility (standalone program - does not require Alloy or Fortress) 
    b. Copy /util/TPTPtoAlloy/build/distributions/TPTPtoAlloy-1.0.zip to root directory and unzip it  
    c. Adjust parameters in python/translate-list-files.py, and set it to translate from tptp to alloy format  
    f. Run the script with
