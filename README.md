@@ -1,3 +1,7 @@
+# Evaluation included in Fortress Journal Submission
+
+The following are the steps taken to reproduce the evaluation reported in the fortress journal submission:
+
 1. Download TPTP-v7.5.0 from http://www.tptp.org/TPTP/Distribution/TPTP-v7.5.0.tgz
    ```
     wget http://www.tptp.org/TPTP/Distribution/TPTP-v7.5.0.tgz  
