@@ -1,0 +1,35 @@
+plugins {
+    id 'java'
+    id 'antlr'
+}
+
+apply plugin: 'application'
+
+version '1.0'
+
+mainClassName = 'FOF2AlloyTranslator'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    antlr "org.antlr:antlr4:4.7.2" // use ANTLR version 4
+    implementation "org.antlr:antlr4-runtime:4.7"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+generateGrammarSource {
+    arguments += ["-visitor", "-long-messages", "-Werror"]
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'FOF2AlloyTranslator'
+    }
+}
