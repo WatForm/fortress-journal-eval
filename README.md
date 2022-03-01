@@ -68,7 +68,7 @@ The following are the steps taken to reproduce the evaluation reported in the fo
    - results/unsat/translate-to-alloy/translate-RESULTS.csv  
    5. In the previous step, we lost 30 sat files due to unsupported operators like “<~>" and “<=”(24), quoted identifiers(2), stack overflow
    error(4).  We lost 19 unsat files due to unsupported operators like “<~>" and “<=”(9), quoted identifiers(3), stack
-   overflow error(7).  Remove these from the list of files by adjusting parameters and running the script
+   overflow error(7).  ??? I don't know how to stop the strikethrough! Remove these from the list of files by adjusting parameters and running the script
     ```
    python3 python/clean-filelist.py
    ```
@@ -110,11 +110,11 @@ The following are the steps taken to reproduce the evaluation reported in the fo
    python3 python/run-tests.py
    
       ```
-   The results can be found in:
+   The results can be found in:  
    - results/sat/correctness/run-tests-RESULTS.csv  
    - results/unsat/correctness/run-tests-RESULTS.csv   
    All unsat files passed the correctness testing successfully.  All but six sat files successfully completed correctness testing: Four sat files time out for both v3si and v4si for correctness checking.  One additional file timed out for v3si and one for v4si.  Note that correctness checking takes more resources than solving so we do not need to exclude these files from our performance evaluation.
-   ???? what's in the following ????
-   -> results/sat/correctness/sat.csv (104 sat files)  
-   -> results/unsat/correctness/unsat.csv (110 unsat files)
+   ???? what's in the following ????  
+   - results/sat/correctness/sat.csv (104 sat files)  
+   - results/unsat/correctness/unsat.csv (110 unsat files)
 
