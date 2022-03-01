@@ -45,7 +45,7 @@ The following are the steps taken to reproduce the evaluation reported in the fo
    And the following hold the file lists:
    - results/sat/translate-to-prover9/translate-RESULTS.csv  
    - results/unsat/translate-to-prover9/translate-RESULTS.csv  
-   7. In the previous step, we lost 1 sat file due to a segmentation fault and we lost 36 unsat files due to 30 read term errors, 2 out of memory errors, 4 segmentation faults.  Remove these from the list of files by adjusting parameters and running the script
+   7. In the previous step, we lost one sat file due to a segmentation fault and we lost 36 unsat files due to 30 read term errors, two out of memory errors, four segmentation faults.  Remove these from the list of files by adjusting parameters and running the script
    ```
    python3 python/clean-filelist.py
    ```
