@@ -16,10 +16,10 @@ The following are the steps taken to reproduce the evaluation reported in the fo
    ```
    The list of resulting files is in results/random-filelist.txt (3000 files).
 
-3. Divide into expected SAT or UNSAT categories based on the status filed in the TPTP problem.  
+3. Divide into expected SAT or UNSAT categories based on the status field in the TPTP problem.  
    expected sat = Satisfiable or CounterSatisfiable  
    expected unsat = Unsatisfiable or ContradictoryAxioms or Theorem  
-   (ignoring status = Unknown or Open, 49 files) 
+   (ignored status = Unknown or Open, 49 files) 
    In finite model finding, some sat problems may be unsat for a particular scope, but this status is a helpful starting point.
    Adjust parameters in python/get-sat-or-unsat-file-list.py and run the script with
     ```
