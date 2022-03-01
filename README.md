@@ -16,7 +16,7 @@ The following are the steps taken to reproduce the evaluation reported in the fo
    ```
    The list of resulting files is in results/random-filelist.txt (3000 files).
 
-3. Divide into expected SAT or UNSAT categories based on the status filed in the TPTP problem. 
+3. Divide into expected SAT or UNSAT categories based on the status filed in the TPTP problem.  
    expected sat = Satisfiable or CounterSatisfiable  
    expected unsat = Unsatisfiable or ContradictoryAxioms or Theorem  
    (ignoring status = Unknown or Open, 49 files) 
