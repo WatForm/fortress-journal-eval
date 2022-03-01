@@ -57,7 +57,7 @@ The following are the steps taken to reproduce the evaluation reported in the fo
     1. Follow readme in tools/TPTPtoAlloy to build that utility (standalone program - it does not require Alloy or
        Fortress)
     2. Copy /tools/TPTPtoAlloy/build/distributions/TPTPtoAlloy-1.0.zip to root directory and unzip it
-    3. Adjust parameters in python/translate-list-files.py, and set it to translate from tptp to alloy format
+    3. Adjust parameters in python/translate-list-files.py, and set it to translate fro TPTP to Alloy format
     4. Run the script with
     ```
    python3 python/translate-list-files.py
