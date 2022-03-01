@@ -9,7 +9,7 @@ The following are the steps taken to reproduce the evaluation reported in the fo
    ```
    results in 9091 files.
 
-2. Generate a list of 3000 FOF problems in random order  
+2. Generate a list of 3000 FOF TPTP problems in random order from the above files.
    Adjust parameters in python/get-random-file-list.py and run the script with
    ```
    python3 python/get-random-file-list.py
