@@ -27,7 +27,8 @@ The following are the steps taken to reproduce the evaluation reported in the fo
     ```
     This results in two lists of files:
    - results/sat/sat-file-list.txt (398 files)  
-   - results/unsat/unsat-file-list.txt (2553 files)
+   - results/unsat/unsat-file-list.txt (2553 files)  
+   Note that conjectures are treated as not(conjecture) within fortress.
 
 4. Translate 398 sat models and first 800 unsat models into prover9 format
     1. Download LADR CLI version of all tools from https://www.cs.unm.edu/~mccune/prover9 (on next page choose version
@@ -36,7 +37,7 @@ The following are the steps taken to reproduce the evaluation reported in the fo
     3. "make all" - It throws errors, move all "-lm" flags to the end of lines in line 65-84 of "
        LADR-2009-11A/provers.src/Makefile".
     4. Now "make all" succeeds, all binaries are in bin/
-    5. Adjust parameters in python/translate-list-files.py, and set it to translate from tptp to prover9 format
+    5. Adjust parameters in python/translate-list-files.py, and set it to translate from tptp to prover9 format (with a timeout of 60 minutes)
     6. Run the script in directory "TPTP-v7.5.0/" with
    ```
    python3 ../python/translate-list-files.py
@@ -57,7 +58,7 @@ The following are the steps taken to reproduce the evaluation reported in the fo
     1. Follow readme in tools/TPTPtoAlloy to build that utility (standalone program - it does not require Alloy or
        Fortress)
     2. Copy /tools/TPTPtoAlloy/build/distributions/TPTPtoAlloy-1.0.zip to root directory and unzip it
-    3. Adjust parameters in python/translate-list-files.py, and set it to translate fro TPTP to Alloy format
+    3. Adjust parameters in python/translate-list-files.py, and set it to translate fro TPTP to Alloy format (with a timeout of 60 minutes)
     4. Run the script with
     ```
    python3 python/translate-list-files.py
