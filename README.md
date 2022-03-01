@@ -67,9 +67,9 @@ The following are the steps taken to reproduce the evaluation reported in the fo
    And the following hold the file lists:
    - results/sat/translate-to-alloy/translate-RESULTS.csv  
    - results/unsat/translate-to-alloy/translate-RESULTS.csv  
-   5. In the previous step, we lost 30 sat files due to unsupported operators like “<~>" and “<=”(24), quoted identifiers(2), stack overflow
-   error(4).  We lost 19 unsat files due to unsupported operators like “<~>" and “<=”(9), quoted identifiers(3), stack
-   overflow error(7).  ??? I don't know how to stop the strikethrough! Remove these from the list of files by adjusting parameters and running the script
+   5. In the previous step, we lost 30 sat files due to unsupported operators like “<\~>" and “<=”(24), quoted identifiers(2), stack overflow
+   error(4).  We lost 19 unsat files due to unsupported operators like “<\~>" and “<=”(9), quoted identifiers(3), stack
+   overflow error(7).  Remove these from the list of files by adjusting parameters and running the script
     ```
    python3 python/clean-filelist.py
    ```
