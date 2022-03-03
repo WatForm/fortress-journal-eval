@@ -28,7 +28,7 @@ The following are the steps taken to reproduce the evaluation reported in the fo
     This results in two lists of files:
    - results/sat/sat-file-list.txt (398 files)  
    - results/unsat/unsat-file-list.txt (2553 files)  
-   Note that conjectures are treated as not(conjecture) within fortress.
+   Note that conjectures are treated as not(conjecture) within fortress and Alloy.
 
 4. Translate 398 sat models and first 800 unsat models into prover9 format
     1. Download LADR CLI version of all tools from https://www.cs.unm.edu/~mccune/prover9 (on next page choose version
