@@ -34,7 +34,7 @@ def killp(p, name, longlogf):
         # so the try/except is needed
         p.kill()
         # the following seems to have processlookup errors even though process exists
-        os.killpg(p.pid, signal.SIGKILL)
+        # os.killpg(p.pid, signal.SIGKILL)
         longlogf.write("killed: " + name + "\n")
         longlogf.flush()
     except ProcessLookupError:
@@ -98,7 +98,7 @@ def runprocess(name, longlogf, uppertimethreshold):
                         output = "StackOverflowError"
                     else:
                         output = "NONZEROCODE"
-                    t = uppertimethreshold
+                    # t = uppertimethreshold
                 exitcode = process.returncode
             except TimeoutExpired:
                 t = uppertimethreshold
