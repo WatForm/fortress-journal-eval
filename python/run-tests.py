@@ -6,6 +6,7 @@
 import re
 import csv
 from datetime import datetime
+import os
 
 import util
 
@@ -15,7 +16,7 @@ foretressdebug_version = "fortressdebug-0.1.0"  # set fortressdebug version here
 stacksize = '-Xss8m'  # fortress JVM Stack size set to 8 MB
 
 dirprefix = "./"
-fileoffiles = dirprefix + "sat.csv"
+fileoffiles = dirprefix + "25-unsat-tptp.txt"
 tptpdir = dirprefix + "TPTP-v7.5.0/Problems/"
 smtlibdir = dirprefix + "benchmarks/2019-05-06-smt-lib-uf-benchmarks-star-exec/"
 prover9dir = dirprefix + "prover9-tptp/Problems/"
@@ -23,7 +24,7 @@ alloydir = dirprefix + "alloy-tptp/Problems/"
 
 countsortbin = 'java -cp "' + dirprefix + 'java/libs/*:' + dirprefix + 'java/libs/' + foretressdebug_version + '/lib/*" -Djava.library.path="java/libs" ' + stacksize + ' countsorts.Countsorts'
 fortressbin = dirprefix + 'java/libs/' + foretressdebug_version + '/bin/fortressdebug'
-alloybin = dirprefix + 'util/runAlloy/bin/runAlloy'
+alloybin = dirprefix + 'tools/runAlloy/build/distributions/runAlloy/bin/runAlloy'
 mace4bin = dirprefix + "tools/LADR-2009-11A/bin/mace4"
 
 uppertimethreshold = 20 * 60  # seconds 1200 = 20 minutes
@@ -41,43 +42,53 @@ def count_sorts(longname, shortname, filecount):
     (t, output, exitcode, stderr) = util.runprocess(countsortbin + fortressargs, longlogf, uppertimethreshold)
     output = output.strip()
     if exitcode == 0 and ',' in output and output.find(',') == output.rfind(','):
-        resultsf.write(output.strip() + ", ")
+        resultsf.write(output.strip() + ", \n")
     else:
-        resultsf.write("NONZEROCODE, , ")
+        resultsf.write("NONZEROCODE, , \n")
     resultsf.flush()
 
 
-def run_mace4(sc, longname, shortname):
+def run_mace4(v, sc, longname, shortname, filecount):
+    global solvertimeout, longlogf, resultsf
     # -P means don't print models
     # -c means ignore unrecognized set/clear/assign commands in the input file
     # don't print all the output to the screen
     mace4args = " -c -P 0 -t " + str(solvertimeout) \
                 + " -n " + str(sc) + " -N " + str(sc) \
                 + " -b 8060 -f " + longname
-    longlogf.write(mace4bin + mace4args + '\n')
-    longlogf.flush()
-    (t, output, exitcode, stderr) = util.runprocess(mace4bin + mace4args, longlogf, uppertimethreshold)
-    # get the sat/unsat status
-    # if process exit code is 0, then it is sat. otherwise, it is unsat.
-    if exitcode is not None:
-        if exitcode == 0:
-            output = "SAT"
-        elif exitcode == 2:
-            output = "UNSAT"
-        elif 3 <= exitcode <= 5:
-            output = "UNKNOWN"
+    for i in range(numtimestoaverage):
+        longlogf.write(
+            "\nRUN NO. " + str(filecount) + "," + str(i) + " " + v + " scope=" + str(sc) + "\n" + shortname + '\n')
+        longlogf.write(mace4bin + mace4args + '\n')
+        longlogf.flush()
+        (t, output, exitcode, stderr) = util.runprocess(mace4bin + mace4args, longlogf, uppertimethreshold)
+        # get the sat/unsat status
+        # if process exit code is 0, then it is sat. otherwise, it is unsat.
+        if exitcode is not None:
+            if exitcode == 0:
+                reason = "SAT"
+            elif exitcode == 2:
+                reason = "UNSAT"
+            elif 3 <= exitcode <= 5:
+                reason = "UNKNOWN"
+            else:
+                reason = "NONZEROCODE" + str(exitcode)
+                # t = uppertimethreshold
         else:
-            output = "NONZEROCODE"
-            t = uppertimethreshold
-    resultsf.write(output + ", " + str(round(t, 2)))
-    resultsf.flush()
+            reason = output
+        resultsf.write(shortname + ", " + v + ", " + str(sc) + ", " + reason + ", " + str(
+            round(t, 2)) + ", " + ", " + ", " + ", " + ', \n')
+        resultsf.flush()
+        sumsf.write(str(round(t, 2)) + ", ")
+        sumsf.flush()
 
 
-def run_fortress(v, sc, longname, shortname, filecount):
+def run_fortress(v, sc, longname, shortname, filecount, validate):
     global solvertimeout, longlogf, resultsf
+    flags = '--validate --rawdata' if validate else '--rawdata'
     fortressargs = ' -J' + stacksize + ' --timeout ' + str(
         solvertimeout) + ' --mode decision --scope ' + str(
-        sc) + ' --version ' + v + ' --validate --rawdata ' + longname
+        sc) + ' --version ' + v + ' ' + flags + ' ' + longname
     for i in range(numtimestoaverage):
         longlogf.write(
             "\nRUN NO. " + str(filecount) + "," + str(i) + " " + v + " scope=" + str(sc) + "\n" + shortname + '\n')
@@ -95,6 +106,8 @@ def run_fortress(v, sc, longname, shortname, filecount):
             reason = 'UNSAT'
         elif re.search(r'Sat', output):
             reason = 'SAT'
+        elif re.search(r'Unknown', output):
+            reason = 'UNKNOWN'
         elif re.search(r'No new sorts', output):
             reason = 'No_new_sorts'
         else:
@@ -128,10 +141,10 @@ def run_fortress(v, sc, longname, shortname, filecount):
                 interp_time = line.replace('Obtain interpretation time: ', '')
             elif line.startswith('Verify instance time:'):
                 verify_time = line.replace('Verify instance time: ', '')
-        resultsf.write(shortname + ", " + v + ", " + str(sc) + ", " + reason + ", " + str(round(t, 2)) + ", " +
-                       tranformation_time + ", " + convert_time + ", " + solver_time + ", " + verify_instance + ', ')
+        resultsf.write(shortname + ", " + v + ("-validate" if validate else "") + ", " + str(sc) + ", " + reason + ", " + str(round(t, 2)) + ", " +
+                       tranformation_time + ", " + convert_time + ", " + solver_time + ", " + verify_instance + ', \n')
         # sumsf.write(str(round(t, 2)) + ", ")
-        sumsf.write(v + ", " + str(
+        sumsf.write(v + ("-validate" if validate else "") + ", " + str(
             sc) + ", " + constant_interp + ", " + sort_interp + ", " + func_interp + ", " + interp_time + ", " + verify_time + ", " + str(
             round(t, 2)) + ", ")
         resultsf.flush()
@@ -140,6 +153,12 @@ def run_fortress(v, sc, longname, shortname, filecount):
 def run_alloy(v, sc, longname, shortname, filecount):
     global solvertimeout, longlogf, resultsf
     alloyargs = ' ' + longname
+    # For running tptp translated files only
+    alloyf = open(longname, "a")
+    alloyf.write("\nrun {} for exactly " + sc + " _UNIV\n")
+    alloyf.flush()
+    alloyf.close()
+
     for i in range(numtimestoaverage):
         longlogf.write(
             "\nRUN NO. " + str(filecount) + "," + str(i) + " " + v + " scope=" + str(sc) + "\n" + shortname + '\n')
@@ -153,10 +172,35 @@ def run_alloy(v, sc, longname, shortname, filecount):
         else:
             reason = "unknown"
         resultsf.write(shortname + ", " + v + ", " + str(sc) + ", " + reason + ", " + str(
-            round(t, 2)) + ", " + ", " + ", " + ", " + ', ')
+            round(t, 2)) + ", " + ", " + ", " + ", " + ', \n')
         sumsf.write(str(round(t, 2)) + ", ")
         sumsf.flush()
         resultsf.flush()
+
+    # Delete last non-empty line
+    # Reference: https://stackoverflow.com/questions/1877999/delete-final-line-in-file-with-python
+    with open(longname, "r+", encoding = "utf-8") as file:
+
+        # Move the pointer (similar to a cursor in a text editor) to the end of the file
+        file.seek(0, os.SEEK_END)
+
+        # This code means the following code skips the very last character in the file -
+        # i.e. in the case the last line is null we delete the last line
+        # and the penultimate one
+        pos = file.tell() - 1
+
+        # Read each character in the file one at a time from the penultimate
+        # character going backwards, searching for a newline character
+        # If we find a new line, exit the search
+        while pos > 0 and file.read(1) != "\n":
+            pos -= 1
+            file.seek(pos, os.SEEK_SET)
+
+        # So long as we're not at the start of the file, delete all the characters ahead
+        # of this position
+        if pos > 0:
+            file.seek(pos, os.SEEK_SET)
+            file.truncate()
 
 
 now = datetime.now()
@@ -198,14 +242,10 @@ with open(fileoffiles) as f:
 for i in range(filecount, len(filelist)):
     shortname = filelist[i][0]
     sc = filelist[i][1]
-    # count_sorts(tptpdir + shortname, shortname, i)
-    # run_mace4(sc, prover9dir + shortname.replace('.p', '.in'), shortname.replace('.p', '.in'))
-    sumsf.write(shortname + ', ')
-    for v in ['v3si', 'v4si']:
-        # for v in ['upperIter', 'parIter', 'upperND', 'upperPred']:
-        run_fortress(v, sc, tptpdir + shortname, shortname, i)
-        resultsf.write('\n')
-        # run_alloy('alloy', sc, alloydir + shortname.replace('.p', '.als'), shortname.replace('.p', '.als'), i)
+    for v in ['v3si', 'v4si', "v3"]:
+        run_fortress(v, sc, tptpdir + shortname, shortname, i, False)
+        run_fortress(v, sc, tptpdir + shortname, shortname, i, True)
+
     resultsf.flush()
     sumsf.write('\n')
     sumsf.flush()
